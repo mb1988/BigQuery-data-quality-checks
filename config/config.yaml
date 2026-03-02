@@ -1,0 +1,81 @@
+# =================================================================
+# DATA QUALITY MONITORING CONFIGURATION
+# =================================================================
+# This is the PUBLIC configuration file safe for GitHub
+# Sensitive values are loaded from environment variables
+# =================================================================
+
+# BigQuery Data Source
+datasource:
+  # Project, dataset, and table are loaded from environment variables
+  bigquery_project: ${GCP_PROJECT_ID}
+  bigquery_dataset: ${GCP_DATASET}
+  bigquery_table: ${GCP_TABLE}
+
+# Metrics to monitor
+metrics:
+  users:
+    enabled: true
+    field_name: "componentCount"
+    aggregation: "none"  # Already distinct per day
+
+  views:
+    enabled: true
+    field_name: "screenViews"
+    aggregation: "none"  # Already aggregated per day
+
+# Dimensions for segmentation
+dimensions:
+  temporalLabel:
+    enabled: true
+    field_name: "temporalLabel"
+    values: ["daily", "weekly", "monthly"]
+
+  country:
+    enabled: true
+    field_name: "country"
+    # Full list of countries to monitor
+    values: ["DZ", "KW", "SB", "KZ", "BA", "VU", "BD", "TM", "Global", "MO", "VE", "LS", "BI", "DE", "PE", "BJ", "GU", "NA", "SC", "LK", "PK", "BO", "IE", "GP", "SI", "MY", "IS", "AG", "CL", "MN", "KH", "RU", "NI", "EG", "GH", "HK", "FR", "MQ", "SR", "DJ", "MT", "PM", "UY", "CK", "MW", "CG", "MR", "MP", "GM", "TW", "TT", "KM", "GQ", "MK", "SJ", "LR", "ME", "CF", "NO", "BE", "CH", "NF", "VN", "HU", "ET", "IN", "TR", "VA", "SK", "BV", "MU", "GW", "KG", "PW", "CW", "JO", "TL", "FM", "TD", "SA", "LT", "TZ", "LV", "SD", "FJ", "TV", "BH", "SH", "ZA", "SG", "GE", "IT", "PY", "MG", "FI", "VG", "SV", "MH", "LB", "CA", "NC", "CU", "HR", "PL", "KY", "BB", "PF", "LY", "SN", "ML", "ZM", "PS", "HT", "ID", "PH", "AW", "PA", "EC", "MS", "SS", "SY", "AT", "UA", "GD", "TC", "KP", "AZ", "GR", "MC", "AU", "QA", "MD", "Unknown", "SL", "RW", "BL", "KE", "AE", "AF", "RO", "RS", "IR", "ZW", "GT", "MF", "GA", "EE", "ES", "GG", "BZ", "AI", "AL", "CR", "LC", "SZ", "AR", "GY", "GF", "YT", "BN", "CD", "AM", "CN", "RE", "MV", "IM", "BM", "JE", "FO", "NZ", "DK", "TF", "PR", "MX", "NU", "TH", "IQ", "SX", "BR", "NP", "WS", "CI", "NE", "CZ", "DO", "KI", "CM", "YE", "AX", "PG", "NR", "MZ", "LA", "GL", "KN", "CX", "NG", "IL", "BS", "TG", "MM", "SE", "NL", "US", "BW", "LU", "BF", "GB", "DM", "ST", "CV", "BT", "TK", "TO", "AQ", "JM", "TJ", "CO", "XK", "GN", "SO", "UZ", "BG", "GI", "BQ", "TN", "JP", "SM", "PT", "LI", "HN", "ER", "MA", "VC", "KR", "VI", "FK", "IO", "AO", "AD", "AS", "UG", "OM", "CY", "BY"]
+
+    # Country priority tiers for monitoring and alerting
+    priority_tiers:
+      tier_1_core_business:
+        # Core markets where business operates
+        countries: ["GB", "IE", "ZA", "NG"]
+        description: "Core business markets - highest priority"
+        alert_threshold_drop: 10  # Alert on >10% drop
+        alert_threshold_spike: 50  # Alert on >50% spike
+        z_score_threshold: 3.0  # Alert if >3 standard deviations
+
+      tier_2_strategic_watch:
+        # Important aggregates and growth markets
+        countries: ["Global", "Unknown", "US", "MX"]
+        description: "Strategic watch - high importance"
+        alert_threshold_drop: 20  # Alert on >20% drop
+        alert_threshold_spike: 100  # Alert on >100% spike
+        z_score_threshold: 4.0  # Alert if >4 standard deviations
+
+      tier_3_all_others:
+        # All other countries
+        description: "All other markets - standard monitoring"
+        alert_threshold_drop: 50  # Alert on >50% drop
+        alert_threshold_spike: 200  # Alert on >200% spike
+        z_score_threshold: 5.0  # Alert if >5 standard deviations
+
+  platform:
+    enabled: true
+    field_name: "platform"
+    values: ["android", "ios", "mobile", "desktop"]
+
+# Alert thresholds (deprecated - using priority_tiers instead)
+alerts:
+  daily_drop_threshold: 10
+  daily_spike_threshold: 50
+  monthly_drop_threshold: 20
+  monthly_spike_threshold: 100
+  yearly_drop_threshold: 30
+
+  # Email notifications (controlled by environment variables)
+  email_notifications: false  # Overridden by EMAIL_ENABLED env var
+  email_recipients: []  # Overridden by EMAIL_TO env var
+
