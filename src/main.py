@@ -8,16 +8,18 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
-# Load environment variables from .env file FIRST
+# Load environment variables from .env file FIRST (optional for local dev)
 from dotenv import load_dotenv
 
-# Find and load .env file
+# Find and load .env file - but don't fail if it doesn't exist
 env_path = Path(__file__).parent.parent / '.env'
 if env_path.exists():
     load_dotenv(dotenv_path=env_path)
     print(f"✅ Loaded environment from: {env_path}")
 else:
-    print(f"⚠️  No .env file found at: {env_path}")
+    print(f"⚠️  No .env file found at: {env_path} (using GitHub Secrets/environment variables)")
+    # Still call load_dotenv() to load from environment variables
+    load_dotenv()
 
 # Add parent directory to path so imports work
 sys.path.insert(0, str(Path(__file__).parent.parent))
