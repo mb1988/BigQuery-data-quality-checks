@@ -1,12 +1,12 @@
 name: Data Quality Check (Daily/Weekly/Monthly)
 
-on:
-  schedule:
-    # Run at 9:00 AM UTC every day to check all temporal granularities
-    - cron: '0 9 * * *'
+# on:
+#   schedule:
+#     # Run at 9:00 AM UTC every day to check all temporal granularities
+#     - cron: '0 9 * * *'
 
-  # Allow manual trigger
-  workflow_dispatch:
+#   # Allow manual trigger
+#   workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.11'
